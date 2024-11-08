@@ -78,6 +78,20 @@ def get_pacientes():
     )
     return response
 
+@app.route('/delete_paciente/<int:id_paciente>', methods=['DELETE'])
+def delete_paciente(id_paciente):
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+
+    # Executa a exclusão com base no id_paciente
+    cursor.execute("DELETE FROM paciente WHERE id_paciente = %s", (id_paciente,))
+
+    connection.commit()
+    cursor.close()
+    connection.close()
+    
+    return jsonify({"status": "Paciente deletado com sucesso"}), 200
+
 
 
 if __name__ == "__main__":
