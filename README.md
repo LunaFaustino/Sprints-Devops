@@ -22,4 +22,6 @@ webapp-sprint3-luna.azurewebsites.net
 - Nas outras duas páginas de Dentistas e Pacientes seguem a mesma lógica.
 
 
+## DDL
 
+O DDL das tabelas está no arquivo setup-database.sql (sprint3/setup/setup-database.sql).
