@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Odontoprev</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>OdontoPrev</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#" class="active" data-page="dashboard">Dashboard</a></li>
+                <li><a href="#" data-page="clinicas">Clínicas</a></li>
+                <li><a href="#" data-page="dentistas">Dentistas</a></li>
+                <li><a href="#" data-page="pacientes">Pacientes</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="dashboard" class="page active">
+            <h2>Dashboard</h2>
+            <div class="dashboard-cards">
+                <div class="card">
+                    <i class="fas fa-clinic-medical"></i>
+                    <h3>Clínicas</h3>
+                    <p id="total-clinicas">Carregando...</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-user-md"></i>
+                    <h3>Dentistas</h3>
+                    <p id="total-dentistas">Carregando...</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-user"></i>
+                    <h3>Pacientes</h3>
+                    <p id="total-pacientes">Carregando...</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="clinicas" class="page">
+            <h2>Gerenciamento de Clínicas</h2>
+            <div class="actions">
+                <button id="add-clinica-btn" class="btn-primary">Nova Clínica</button>
+            </div>
+            <div class="table-container">
+                <table id="clinicas-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Endereço</th>
+                            <th>Telefone</th>
+                            <th>Email</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="dentistas" class="page">
+            <h2>Gerenciamento de Dentistas</h2>
+            <div class="actions">
+                <button id="add-dentista-btn" class="btn-primary">Novo Dentista</button>
+            </div>
+            <div class="table-container">
+                <table id="dentistas-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>CRO</th>
+                            <th>Especialidade</th>
+                            <th>Clínica</th>
+                            <th>Telefone</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="pacientes" class="page">
+            <h2>Gerenciamento de Pacientes</h2>
+            <div class="actions">
+                <button id="add-paciente-btn" class="btn-primary">Novo Paciente</button>
+            </div>
+            <div class="table-container">
+                <table id="pacientes-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>Idade</th>
+                            <th>Telefone</th>
+                            <th>Clínica</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div id="clinica-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="clinica-modal-title">Nova Clínica</h2>
+            <form id="clinica-form">
+                <input type="hidden" id="clinica-id">
+                <div class="form-group">
+                    <label for="clinica-nome">Nome:</label>
+                    <input type="text" id="clinica-nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="clinica-endereco">Endereço:</label>
+                    <input type="text" id="clinica-endereco" required>
+                </div>
+                <div class="form-group">
+                    <label for="clinica-telefone">Telefone:</label>
+                    <input type="text" id="clinica-telefone" required>
+                </div>
+                <div class="form-group">
+                    <label for="clinica-email">Email:</label>
+                    <input type="email" id="clinica-email">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Salvar</button>
+                    <button type="button" class="btn-secondary close-modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="dentista-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="dentista-modal-title">Novo Dentista</h2>
+            <form id="dentista-form">
+                <input type="hidden" id="dentista-id">
+                <div class="form-group">
+                    <label for="dentista-nome">Nome:</label>
+                    <input type="text" id="dentista-nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="dentista-cro">CRO:</label>
+                    <input type="text" id="dentista-cro" required>
+                </div>
+                <div class="form-group">
+                    <label for="dentista-especialidade">Especialidade:</label>
+                    <input type="text" id="dentista-especialidade">
+                </div>
+                <div class="form-group">
+                    <label for="dentista-telefone">Telefone:</label>
+                    <input type="text" id="dentista-telefone">
+                </div>
+                <div class="form-group">
+                    <label for="dentista-email">Email:</label>
+                    <input type="email" id="dentista-email">
+                </div>
+                <div class="form-group">
+                    <label for="dentista-clinica">Clínica:</label>
+                    <select id="dentista-clinica" required>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Salvar</button>
+                    <button type="button" class="btn-secondary close-modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="paciente-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="paciente-modal-title">Novo Paciente</h2>
+            <form id="paciente-form">
+                <input type="hidden" id="paciente-id">
+                <div class="form-group">
+                    <label for="paciente-nome">Nome:</label>
+                    <input type="text" id="paciente-nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="paciente-cpf">CPF:</label>
+                    <input type="text" id="paciente-cpf" required>
+                </div>
+                <div class="form-group">
+                    <label for="paciente-data-nascimento">Data de Nascimento:</label>
+                    <input type="date" id="paciente-data-nascimento">
+                </div>
+                <div class="form-group">
+                    <label for="paciente-telefone">Telefone:</label>
+                    <input type="text" id="paciente-telefone">
+                </div>
+                <div class="form-group">
+                    <label for="paciente-email">Email:</label>
+                    <input type="email" id="paciente-email">
+                </div>
+                <div class="form-group">
+                    <label for="paciente-endereco">Endereço:</label>
+                    <input type="text" id="paciente-endereco">
+                </div>
+                <div class="form-group">
+                    <label for="paciente-clinica">Clínica:</label>
+                    <select id="paciente-clinica" required>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Salvar</button>
+                    <button type="button" class="btn-secondary close-modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Confirmar Exclusão</h2>
+            <p id="confirm-message">Tem certeza que deseja excluir este item?</p>
+            <div class="form-actions">
+                <button id="confirm-yes" class="btn-danger">Sim, excluir</button>
+                <button class="btn-secondary close-modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 OdontoPrev - Sistema de Gerenciamento Odontológico</p>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
