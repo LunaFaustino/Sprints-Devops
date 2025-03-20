@@ -3,7 +3,7 @@
 ## Repositório criado para realizar as entregas das Sprints do Challenge da Odontoprev
 
 LARISSA ARAÚJO GAMA ALVARENGA – 96496 - 2TDSPS <br>
-LARISSA LOPES OLIVEIRA – 552628 - 2TDSPB <br>
+LARISSA LOPES OLIVEIRA – 552628 - 2TDSPC <br>
 LUNA FAUSTINO LIMA – 552473 - 2TDSPS
 
 ## LINK YOUTUBE
