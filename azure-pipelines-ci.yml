@@ -1,0 +1,48 @@
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - sprint4/**
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  nodeVersion: '18.x'
+
+stages:
+- stage: Build
+  displayName: 'Build e Teste'
+  jobs:
+  - job: Build
+    displayName: 'Build do Projeto'
+    steps:
+    - checkout: self
+      
+    - task: NodeTool@0
+      displayName: 'Instalar Node.js $(nodeVersion)'
+      inputs:
+        versionSpec: '$(nodeVersion)'
+    
+    - script: |
+        cd sprint4
+        npm install
+      displayName: 'Instalar dependências'
+      
+    - task: ArchiveFiles@2
+      displayName: 'Comprimir arquivos do projeto'
+      inputs:
+        rootFolderOrFile: 'sprint4'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/odontoprev.zip'
+        replaceExistingArchive: true
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publicar artefato'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'

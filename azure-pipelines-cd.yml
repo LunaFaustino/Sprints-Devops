@@ -1,0 +1,122 @@
+trigger: none
+pr: none
+
+resources:
+  pipelines:
+  - pipeline: CI
+    source: 'Pipeline CI'
+    trigger: true
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  azureSubscription: 'azure-subscription'
+  resourceGroupName: 'odontoprev-rg'
+  location: 'brazilsouth'
+  webAppName: 'odontoprev-webapp'
+  sqlServerName: 'odontoprev-sqlserver'
+  sqlDatabaseName: 'OdontoprevDB'
+  sqlAdminLogin: 'sqladmin'
+  sqlAdminPassword: '2TDSPS@2025'
+
+stages:
+- stage: DeployInfrastructure
+  displayName: 'Implantar Infraestrutura'
+  jobs:
+  - job: DeployAzureResources
+    displayName: 'Criar Recursos na Azure'
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Criar Resource Group'
+      inputs:
+        azureSubscription: '$(azureSubscription)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az group create --name $(resourceGroupName) --location $(location)
+    
+    - task: AzureCLI@2
+      displayName: 'Criar SQL Server e Database'
+      inputs:
+        azureSubscription: '$(azureSubscription)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az sql server create --name $(sqlServerName) --resource-group $(resourceGroupName) --location $(location) --admin-user $(sqlAdminLogin) --admin-password $(sqlAdminPassword)
+          
+          az sql server firewall-rule create --name AllowAll --server $(sqlServerName) --resource-group $(resourceGroupName) --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255
+          
+          az sql db create --name $(sqlDatabaseName) --server $(sqlServerName) --resource-group $(resourceGroupName) --service-objective Basic --backup-storage-redundancy Local --yes
+    
+    - task: AzureCLI@2
+      displayName: 'Criar Web App'
+      inputs:
+        azureSubscription: '$(azureSubscription)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az appservice plan create --name $(webAppName)-plan --resource-group $(resourceGroupName) --sku F1 --is-linux
+          
+          az webapp create --name $(webAppName) --resource-group $(resourceGroupName) --plan $(webAppName)-plan --runtime "NODE|18-lts"
+          
+          az webapp config appsettings set --resource-group $(resourceGroupName) --name $(webAppName) --settings \
+            DB_SERVER="$(sqlServerName).database.windows.net" \
+            DB_NAME="$(sqlDatabaseName)" \
+            DB_USER="$(sqlAdminLogin)" \
+            DB_PASSWORD="$(sqlAdminPassword)"
+
+- stage: DeployDatabase
+  displayName: 'Implantar Banco de Dados'
+  dependsOn: DeployInfrastructure
+  jobs:
+  - job: DeploySQL
+    displayName: 'Executar Scripts SQL'
+    steps:
+    - download: CI
+      artifact: drop
+    
+    - task: AzureCLI@2
+      displayName: 'Instalar mssql-tools e executar script SQL'
+      inputs:
+        azureSubscription: '$(azureSubscription)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          # Instalar dependências para sqlcmd
+          curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+          curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
+          
+          echo "Verificando o conteúdo do diretório de artefatos:"
+          find $(Pipeline.Workspace) -type f -name "*.sql" | sort
+          
+          SCRIPT_PATH=$(find $(Pipeline.Workspace) -type f -name "setup-database.sql" | head -n 1)
+          
+          if [ -z "$SCRIPT_PATH" ]; then
+            echo "ERRO: Arquivo setup-database.sql não encontrado!"
+            exit 1
+          else
+            echo "Arquivo SQL encontrado em: $SCRIPT_PATH"
+            /opt/mssql-tools/bin/sqlcmd -S tcp:$(sqlServerName).database.windows.net,1433 -d $(sqlDatabaseName) -U $(sqlAdminLogin) -P $(sqlAdminPassword) -i "$SCRIPT_PATH"
+          fi
+
+- stage: DeployWebApp
+  displayName: 'Implantar Web App'
+  dependsOn: DeployDatabase
+  jobs:
+  - job: DeployApp
+    displayName: 'Deploy da Aplicação'
+    steps:
+    - download: CI
+      artifact: drop
+    
+    - task: AzureWebApp@1
+      displayName: 'Deploy para Azure Web App'
+      inputs:
+        azureSubscription: '$(azureSubscription)'
+        appType: 'webAppLinux'
+        appName: '$(webAppName)'
+        package: '$(Pipeline.Workspace)/CI/drop/odontoprev.zip'
+        startUpCommand: 'node server.js'
