@@ -8,7 +8,7 @@ LUNA FAUSTINO LIMA – 552473 - 2TDSPS
 
 ## LINK YOUTUBE
 
-https://www.youtube.com/watch?v=llUtQGoAE4Q
+https://youtu.be/9h03GgRAA9s?si=cZwhdiw9B0Dt7A5N
 
 ## INSTRUÇÕES DE USO DA APLICAÇÃO
 
