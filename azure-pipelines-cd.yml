@@ -58,7 +58,7 @@ stages:
         inlineScript: |
           az appservice plan create --name $(webAppName)-plan --resource-group $(resourceGroupName) --sku F1 --is-linux
           
-          az webapp create --name $(webAppName) --resource-group $(resourceGroupName) --plan $(webAppName)-plan --runtime "NODE|18-lts"
+          az webapp create --name $(webAppName) --resource-group $(resourceGroupName) --plan $(webAppName)-plan --runtime "NODE:20-lts"
           
           az webapp config appsettings set --resource-group $(resourceGroupName) --name $(webAppName) --settings \
             DB_SERVER="$(sqlServerName).database.windows.net" \
